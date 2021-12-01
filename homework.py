@@ -64,9 +64,11 @@ def send_message(bot, message):
 
 
 def get_api_answer(current_timestamp):
-    """Делает запрос к единственному эндпоинту API-сервиса.
+    """
+    Делает запрос к единственному эндпоинту API-сервиса.
     В случае успешного запроса возвращает ответ API,
-    преобразовав его из формата JSON к типам данных Python."""
+    преобразовав его из формата JSON к типам данных Python.
+    """
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     response = requests.get(ENDPOINT, headers=HEADERS, params=params)
@@ -88,20 +90,25 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Извлекает из информации о конкретной домашней работе
-    статус этой работы."""
+    """
+    Извлекает из информации о конкретной домашней работе
+    статус этой работы.
+    """
     homework_name = homework['homework_name']
     homework_status = homework['status']
     if homework_status not in HOMEWORK_STATUSES:
         raise ValueError(STATUS_UNEXPECTED.format(status=homework_status))
-    return f'Изменился статус проверки работы "{homework_name}". {HOMEWORK_STATUSES[homework_status]}'
+    return f'Изменился статус проверки работы "' \
+           f'{homework_name}". {HOMEWORK_STATUSES[homework_status]}'
 
 
 def check_tokens():
-    """Проверяет доступность переменных окружения, которые
+    """
+    Проверяет доступность переменных окружения, которые
     необходимы для работы программы.
     Если отсутствует хотя бы одна переменная окружения —
-    функция возвращает False, иначе — True."""
+    функция возвращает False, иначе — True.
+    """
     tokens = [
         [TELEGRAM_TOKEN, None, TOKEN_ERRORS[0]],
         [TELEGRAM_CHAT_ID, None, TOKEN_ERRORS[1]],
