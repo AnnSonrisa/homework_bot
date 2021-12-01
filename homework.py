@@ -89,9 +89,7 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Извлекает из информации о конкретной домашней работе
-    статус этой работы.
-    """
+    """Извлекает из информации о конкретной домашней работе ее статус."""
     homework_name = homework['homework_name']
     homework_status = homework['status']
     if homework_status not in HOMEWORK_STATUSES:
@@ -101,8 +99,8 @@ def parse_status(homework):
 
 
 def check_tokens():
-    """Проверяет доступность переменных окружения, которые
-    необходимы для работы программы.
+    """
+    Проверяет доступность переменных окружения.
     Если отсутствует хотя бы одна переменная окружения —
     функция возвращает False, иначе — True.
     """
