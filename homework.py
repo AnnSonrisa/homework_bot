@@ -18,9 +18,9 @@ PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
-TOKEN_ERRORS = ['Отстутствует переменная окружения "TELEGRAM_TOKEN"',
+TOKEN_ERRORS = ('Отстутствует переменная окружения "TELEGRAM_TOKEN"',
                 'Отстутствует переменная окружения "TELEGRAM_CHAT_ID"',
-                'Отстутствует переменная окружения "PRACTICUM_TOKEN"']
+                'Отстутствует переменная окружения "PRACTICUM_TOKEN"',)
 
 STATUS_SUMMARY = ('Изменился статус проверки работы "{name}". '
                   '\n\n{verdict}')
@@ -71,6 +71,10 @@ def get_api_answer(current_timestamp):
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
     response = requests.get(ENDPOINT, headers=HEADERS, params=params)
+    if 'code' in response.json():
+        raise ResponseError(f'{response: "code"}')
+    if 'error' in response.json():
+        raise ResponseError(f'{response: "error"}')
     if response.status_code != 200:
         raise ResponseError(
             API_RESPONSE_ERROR.format(response=response.status_code))
@@ -83,6 +87,8 @@ def check_response(response):
     if isinstance(response, dict):
         if 'homeworks' not in response:
             raise MissingKey(HW_NOT_IN_LIST)
+        else:
+            raise None
     if not isinstance(response['homeworks'], list):
         raise TypeError(HW_NOT_LIST_ERR)
     return response['homeworks']
@@ -90,12 +96,12 @@ def check_response(response):
 
 def parse_status(homework):
     """Извлекает из информации о конкретной домашней работе ее статус."""
-    homework_name = homework['homework_name']
-    homework_status = homework['status']
+    homework_name = homework.get('homework_name')
+    homework_status = homework.get('status')
+    result_return = f'{homework_name}".{HOMEWORK_STATUSES[homework_status]}'
     if homework_status not in HOMEWORK_STATUSES:
         raise ValueError(STATUS_UNEXPECTED.format(status=homework_status))
-    return f'Изменился статус проверки работы "' \
-           f'{homework_name}". {HOMEWORK_STATUSES[homework_status]}'
+    return f'Изменился статус проверки работы {result_return}'
 
 
 def check_tokens():
