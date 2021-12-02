@@ -6,48 +6,35 @@ import time
 import telegram
 
 from dotenv import load_dotenv
-from exceptions import MissingKey, ResponseError, SendMessageError
+from exceptions import MissingKey, ResponseError, SendMessageError, AnswerError
 
 load_dotenv()
 
 API_RESPONSE_ERROR = ('Значение кода возрата "{response}" '
                       'не соответствует требуемому - "200".')
-
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
-
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
-
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
-
 TOKEN_ERRORS = ('Отстутствует переменная окружения "TELEGRAM_TOKEN"',
                 'Отстутствует переменная окружения "TELEGRAM_CHAT_ID"',
                 'Отстутствует переменная окружения "PRACTICUM_TOKEN"',)
-
 STATUS_SUMMARY = ('Изменился статус проверки работы "{name}". '
                   '\n\n{verdict}')
-
 STATUS_UNEXPECTED = 'Неожиданное значение ключа "status": {status}'
-
 HW_NOT_LIST_ERR = 'Домашняя работа приходит не в виде списка.'
-
 HW_NOT_IN_LIST = 'Домашней работы нет в списке.'
-
 RETRY_TIME = 600
-
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
-
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
-
 SUCCESSFUL_MSG_SENDING = 'Сообщение {message} успешно отправлено.'
-
 HOMEWORK_STATUSES = {
     'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
     'reviewing': 'Работа взята на проверку ревьюером.',
     'rejected': 'Работа проверена: у ревьюера есть замечания.'
 }
-
 SEND_MESSAGE_ERROR = ('Ошибка {error} при отправке сообщения '
                       '{message} в Telegram')
+TIME_SLEEP = 30
 
 logging.basicConfig(
     stream=sys.stdout,
@@ -75,7 +62,11 @@ def get_api_answer(current_timestamp):
     """
     timestamp = current_timestamp or int(time.time())
     params = {'from_date': timestamp}
-    response = requests.get(ENDPOINT, headers=HEADERS, params=params)
+    try:
+        response = requests.get(ENDPOINT, headers=HEADERS, params=params)
+    except Exception:
+        message = 'Запрос выполнить не удалось'
+        raise AnswerError(message)
     if 'code' in response.json():
         raise ResponseError(f'{response: "code"}')
     if 'error' in response.json():
@@ -150,7 +141,7 @@ def main():
             logging.error(message, exc_info=True)
             if current_error != message:
                 send_message(bot, message)
-            time.sleep(30)
+            time.sleep(TIME_SLEEP)
 
 
 if __name__ == '__main__':

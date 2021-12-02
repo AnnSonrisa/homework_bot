@@ -8,3 +8,7 @@ class ResponseError:
 
 class SendMessageError:
     pass
+
+
+class AnswerError:
+    pass
