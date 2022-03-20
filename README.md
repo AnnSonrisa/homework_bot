@@ -24,9 +24,9 @@
 `touch .env`
 
 
-`PRAKTIKUM_TOKEN= ...`   /* your Yandex.Practicum Homrwork API token */
-`TELEGRAM_TOKEN= ...`    /* your Telegram bot token */
-`TELEGRAM_CHAT_ID= ...`  /* yout Telegram chat id */
+`PRAKTIKUM_TOKEN= ...   /* your Yandex.Practicum Homrwork API token */`
+`TELEGRAM_TOKEN= ...    /* your Telegram bot token */`
+`TELEGRAM_CHAT_ID= ...  /* yout Telegram chat id */`
 
 
 5) Запустите homework.py:
